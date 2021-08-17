@@ -1,24 +1,38 @@
-import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
+
+import Item from './components/Item';
+import Input from './components/Input';
 
 export default function App() {
-  const [outputText, setOutputText] = useState('Hello');
+
+  const [todoList, setTodoList] = useState([]);
   
+
+  function submitHandler(inputText,setInputText){
+      setTodoList((currentTodoList) => [...currentTodoList, {key: Math.random().toString(), value: inputText}]);    
+      setInputText('');
+  }
+
+  function removeItemHandler(itemId){
+    setTodoList(currentTodoList => currentTodoList.filter(item => item.key !== itemId));
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>{outputText}</Text>
-      <Button title="Click Me" onPress={() => setOutputText('Pressed')}/>
-      <StatusBar style="auto" />
-    </View>
+      <View style={styles.container}>       
+        <Input onSubmit={submitHandler}/>
+        <FlatList data={todoList}
+          renderItem={itemData => <Item id={itemData.item.key} onDelete={removeItemHandler} title={itemData.item.value}/> }
+        />
+      </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
-});
+    padding:30,
+    marginTop:40
+  },
+
+})
+
